@@ -43,8 +43,12 @@ class AniListAPIHandler(APIHandler):
 
                 continue
 
-            current_page = response["data"]["Page"]["pageInfo"]["currentPage"]
-            has_next_page = response["data"]["Page"]["pageInfo"]["hasNextPage"]
+            try:
+                current_page = response["data"]["Page"]["pageInfo"]["currentPage"]
+                has_next_page = response["data"]["Page"]["pageInfo"]["hasNextPage"]
+            except:
+                print(response)
+                raise
 
             for media_metadata in response["data"]["Page"]["media"]:
                 # yield id, title, and the complete metadata
@@ -73,8 +77,8 @@ class AniListAPIHandler(APIHandler):
                 sort_new=True
             )
         
-            if "errors" in response.keys():
-                if "errors" in response.keys():
+            if ("errors" not in response.keys()) and ("error" not in response.keys()):
+                if ("errors" not in response.keys()) and ("error" not in response.keys()):
                     self._logger.error(f'Error occurred on retry with AniList API on page {page}.')
                     for error_msg in response["errors"]:
                         self._logger.error(f"Status Code {error_msg['status']} | {error_msg['message']}...")
